@@ -18,6 +18,7 @@ function RawNode(props: NodeProps): JSX.Element {
     if (props.cell.isShortestPath) classes.push('cell--shortest-path');
 
     return <td
+        id={`${props.cell.row}-${props.cell.col}`}
         className={classes.join(' ')}
         style={{ width: props.cell.size, height: props.cell.size - 1 /* 1px is border */ }}
         onMouseDown={(e) => props.onMouseDown(props.cell, e)}
@@ -28,7 +29,9 @@ function RawNode(props: NodeProps): JSX.Element {
     />
 }
 
-export const Node = connect((state: State, outerProps: { row: number; col: number; }) => ({
-    cell: state.map.grid[outerProps.row][outerProps.col],
-}))(RawNode);
+export const Node = connect((_: State, outerProps: { row: number; col: number; }) => {
+    return (state: State) => ({
+        cell: state.map.grid[outerProps.row][outerProps.col],
+    });
+})(RawNode);
 
