@@ -2,7 +2,7 @@ import { Action } from 'redux';
 import { Cell } from '../state/initialState';
 
 export const SET_CELL_AS_OBSTACLE = 'GRID::SET_CELL_AS_OBSTACLE';
-export const SET_CELL_AS_VISITED = 'GRID::SET_CELL_AS_VISITED';
+export const REPLACE_GRID = 'GRID::REPLACE_GRID';
 export const SET_CELL_AS_SHORTEST_PATH = 'GRID::SET_CELL_AS_SHORTEST_PATH';
 
 export function setCellAsObstacle(cell: Cell): Action<typeof SET_CELL_AS_OBSTACLE> & { cell: Cell } {
@@ -12,10 +12,10 @@ export function setCellAsObstacle(cell: Cell): Action<typeof SET_CELL_AS_OBSTACL
     };
 }
 
-export function setCellAsVisited(cell: Cell): Action<typeof SET_CELL_AS_VISITED> & { cell: Cell } {
+export function replaceGrid(grid: Cell[][]): Action<typeof REPLACE_GRID> & { grid: Cell[][] } {
     return {
-        type: SET_CELL_AS_VISITED,
-        cell,
+        type: REPLACE_GRID,
+        grid,
     };
 }
 

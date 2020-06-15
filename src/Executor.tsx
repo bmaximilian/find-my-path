@@ -1,7 +1,9 @@
 import { connect, DispatchProp } from 'react-redux';
-import { initialState, State } from './store/state/initialState';
+import { Cell, initialState, State } from './store/state/initialState';
 import React from 'react';
-import { dijkstra, Result } from './algorithms/dijkstra';
+import { CellTypes, dijkstra, Result } from './algorithms/dijkstra';
+import { depthFirst } from './algorithms/maze/depth-first';
+import { replaceGrid } from './store/actions/mapActions';
 
 interface RawExecutorProps extends DispatchProp {
     grid: typeof initialState.map.grid;
@@ -10,11 +12,15 @@ interface RawExecutorProps extends DispatchProp {
 const VISITED_ANIMATION_TIMEOUT = .005;
 const SHORTEST_PATH_ANIMATION_TIMEOUT = .01;
 
-function RawExecutor({ grid }: RawExecutorProps) {
+function setClassForCell(cell: Cell, className: string) {
+    document.getElementById(`${cell.row}-${cell.col}`)?.classList.add(className);
+}
+
+function RawExecutor({ grid, dispatch }: RawExecutorProps) {
     const animateShortestPath = (result: Result): void => {
         for (let i = 0; i < result.shortestPath.length; i += 1) {
             setTimeout(() => {
-                document.getElementById(`${result.shortestPath[i].row}-${result.shortestPath[i].col}`)?.classList.add('cell--shortest-path');
+                setClassForCell(result.shortestPath[i], 'cell--shortest-path');
             }, 1000 * SHORTEST_PATH_ANIMATION_TIMEOUT * i)
         }
     }
@@ -22,7 +28,7 @@ function RawExecutor({ grid }: RawExecutorProps) {
     const animateSearch = (result: Result): void => {
         for (let i = 0; i < result.visited.length; i += 1) {
             setTimeout(() => {
-                document.getElementById(`${result.visited[i].row}-${result.visited[i].col}`)?.classList.add('cell--visited');
+                setClassForCell(result.visited[i], 'cell--visited');
 
                 if (i === result.visited.length - 1) {
                     animateShortestPath(result);
@@ -36,7 +42,17 @@ function RawExecutor({ grid }: RawExecutorProps) {
         animateSearch(searchResult);
     }
 
-    return <button onClick={startPathFinding}>Find with Dijkstra</button>;
+    const generateMaze = () => {
+        const newMazeGrid = depthFirst(grid);
+        dispatch(replaceGrid(newMazeGrid));
+    }
+
+    return (
+        <>
+            <button onClick={startPathFinding}>Find with Dijkstra</button>
+            <button onClick={generateMaze}>Generate Maze</button>
+        </>
+    );
 }
 
 export const Executor = connect((state: State) => ({ grid: state.map.grid }))(RawExecutor);
