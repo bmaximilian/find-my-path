@@ -1,7 +1,7 @@
 import { connect, DispatchProp } from 'react-redux';
 import { Cell, initialState, State } from './store/state/initialState';
 import React from 'react';
-import { CellTypes, dijkstra, Result } from './algorithms/dijkstra';
+import { dijkstra, Result } from './algorithms/dijkstra';
 import { depthFirst } from './algorithms/maze/depth-first';
 import { replaceGrid } from './store/actions/mapActions';
 
