@@ -30,3 +30,7 @@ body {
 .cell--end {
     background: blue;
 }
+
+.cell--obstacle {
+    background: black;
+}

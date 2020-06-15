@@ -1,26 +1,41 @@
-import React, { memo } from 'react';
-import { connect } from 'react-redux';
+import React, { memo, useState } from 'react';
+import { connect, DispatchProp } from 'react-redux';
 import './App.css';
 import { Node } from './Node';
 import { Cell, State, initialState } from './store/state/initialState';
+import { setCellAsObstacle } from './store/actions/mapActions';
 
-interface AppProps {
+interface AppProps extends DispatchProp {
     grid: Cell[][];
 }
 
-function App(props: AppProps) {
+let isMouseDown = false;
+function setMouseDown(newValue: boolean) {
+    isMouseDown = newValue;
+}
+
+function App({ dispatch, grid }: AppProps) {
+    const handleMouseEnter = (cell: Cell) => {
+        if (!isMouseDown) return;
+
+        dispatch(setCellAsObstacle(cell));
+    };
+
     return (
         <div className="App">
             <table className="map">
                 <tbody>
-                    {props.grid.map((row, rowId) => (
+                    {grid.map((row, rowId) => (
                         <tr key={rowId}>
                             {row.map((cell) => <Node
                                 key={`${cell.row}-${cell.col}`}
                                 row={cell.row}
-                                column={cell.col}
-                                size={cell.size}
-                                type={cell.type}
+                                col={cell.col}
+                                onMouseDown={() => setMouseDown(true)}
+                                onMouseUp={() => setMouseDown(false)}
+                                onMouseLeave={() => {}}
+                                onMouseEnter={() => {}}
+                                onMouseMove={handleMouseEnter}
                             />)}
                         </tr>
                     ))}
