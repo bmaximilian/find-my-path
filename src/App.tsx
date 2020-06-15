@@ -1,33 +1,19 @@
-import React from 'react';
+import React, { memo } from 'react';
+import { connect } from 'react-redux';
 import './App.css';
 import { Node } from './Node';
+import { Cell, State, initialState } from './store/state/initialState';
 
-const width = window.innerWidth * 0.8;
-const height = window.innerHeight * 0.8;
+interface AppProps {
+    grid: Cell[][];
+}
 
-const cellSize = 15;
-
-const cellsPerRow = Math.floor(width / cellSize);
-const rowsCount = Math.floor(height / cellSize);
-
-const rows = Array(rowsCount).fill(0).map((_, rowIndex) => {
-    return Array(cellsPerRow).fill(0).map((_1, colIndex) => {
-        return {
-            size: cellSize,
-            type: 'free',
-            isVisited: false,
-            row: rowIndex,
-            col: colIndex,
-        };
-    });
-});
-
-function App() {
+function App(props: AppProps) {
     return (
         <div className="App">
             <table className="map">
                 <tbody>
-                    {rows.map((row, rowId) => (
+                    {props.grid.map((row, rowId) => (
                         <tr key={rowId}>
                             {row.map((cell) => <Node
                                 key={`${cell.row}-${cell.col}`}
@@ -43,4 +29,17 @@ function App() {
     );
 }
 
-export default App;
+const mapStateToProps = (state: State) => ({
+    grid: state?.map?.grid || initialState.map.grid,
+});
+
+export default connect(mapStateToProps)(memo(
+    App,
+    (prevProps, nextProps) => {
+        if ((!prevProps.grid || prevProps.grid.length === 0) && nextProps?.grid.length > 0) {
+            return false;
+        }
+
+        return true;
+    },
+));
