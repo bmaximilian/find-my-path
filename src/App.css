@@ -24,13 +24,21 @@ body {
 }
 
 .cell--start {
-    background: red;
+    background: red !important;
 }
 
 .cell--end {
-    background: blue;
+    background: blue !important;
 }
 
 .cell--obstacle {
     background: black;
+}
+
+.cell--visited {
+    background: aquamarine;
+}
+
+.cell--shortest-path {
+    background: cornflowerblue;
 }

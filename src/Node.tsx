@@ -12,8 +12,13 @@ interface NodeProps {
 }
 
 function RawNode(props: NodeProps): JSX.Element {
+    const classes = ['map__cell'];
+    if (['obstacle', 'start', 'end'].includes(props.cell.type)) classes.push(`cell--${props.cell.type}`);
+    if (props.cell.isVisited) classes.push('cell--visited');
+    if (props.cell.isShortestPath) classes.push('cell--shortest-path');
+
     return <td
-        className={`map__cell cell--${props.cell.type}`}
+        className={classes.join(' ')}
         style={{ width: props.cell.size, height: props.cell.size - 1 /* 1px is border */ }}
         onMouseDown={(e) => props.onMouseDown(props.cell, e)}
         onMouseUp={(e) => props.onMouseUp(props.cell, e)}

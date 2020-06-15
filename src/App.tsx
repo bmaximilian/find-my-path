@@ -1,9 +1,10 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import { connect, DispatchProp } from 'react-redux';
 import './App.css';
 import { Node } from './Node';
 import { Cell, State, initialState } from './store/state/initialState';
 import { setCellAsObstacle } from './store/actions/mapActions';
+import { Executor } from './Executor';
 
 interface AppProps extends DispatchProp {
     grid: Cell[][];
@@ -16,7 +17,7 @@ function setMouseDown(newValue: boolean) {
 
 function App({ dispatch, grid }: AppProps) {
     const handleMouseEnter = (cell: Cell) => {
-        if (!isMouseDown) return;
+        if (!isMouseDown || cell.type !== 'free') return;
 
         dispatch(setCellAsObstacle(cell));
     };
@@ -41,6 +42,7 @@ function App({ dispatch, grid }: AppProps) {
                     ))}
                 </tbody>
             </table>
+            <Executor/>
         </div>
     );
 }
