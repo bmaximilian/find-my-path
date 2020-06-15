@@ -20,6 +20,7 @@ function App(props: AppProps) {
                                 row={cell.row}
                                 column={cell.col}
                                 size={cell.size}
+                                type={cell.type}
                             />)}
                         </tr>
                     ))}
