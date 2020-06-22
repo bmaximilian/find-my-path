@@ -1,32 +1,20 @@
-export enum CellTypes {
-    OBSTACLE = 'obstacle',
-    START = 'start',
-    END = 'end',
-    FREE = 'free',
-}
+import { Cell, CellTypes } from '../models/Cell';
 
-export interface Cell {
-    size: number;
-    col: number;
-    row: number;
+interface Node extends Cell {
     distance: number;
-    isVisited: boolean;
-    type: CellTypes;
-    prevCell?: Cell;
+    prevCell?: Node;
 }
 
-export type OuterCell = Omit<Cell, keyof {distance: any, prevCell: any}>
-
-function sortByDistance(list: Cell[]): Cell[] {
+function sortByDistance(list: Node[]): Node[] {
     return list.sort((a, b) => a.distance - b.distance);
 }
 
-function findFirstCellOfType(type: CellTypes, list: Cell[]): Cell|null {
+function findFirstNodeOfType(type: CellTypes, list: Node[]): Node | null {
     const index = list.findIndex(cell => cell.type === type);
     return index === -1 ? null : list[index];
 }
 
-function getUnvisitedNeighbors(grid: Cell[][], cell: Cell): Cell[] {
+function getUnvisitedNeighbors(grid: Node[][], cell: Node): Node[] {
     const neighbors = [];
 
     // Check the upper cell
@@ -48,7 +36,7 @@ function getUnvisitedNeighbors(grid: Cell[][], cell: Cell): Cell[] {
     return neighbors;
 }
 
-function updateNeighbors(grid: Cell[][], cell: Cell) {
+function updateNeighbors(grid: Node[][], cell: Node) {
     const neighbors = getUnvisitedNeighbors(grid, cell);
 
     neighbors.forEach((neighbor) => {
@@ -57,7 +45,7 @@ function updateNeighbors(grid: Cell[][], cell: Cell) {
     });
 }
 
-function getShortestPathFromVisitedCells(end: Cell): Cell[] {
+function getShortestPathFromVisitedNodes(end: Node): Node[] {
     const shortestPath = [];
     let currentCell = end.prevCell;
 
@@ -70,20 +58,20 @@ function getShortestPathFromVisitedCells(end: Cell): Cell[] {
 }
 
 export interface Result {
-    shortestPath: Cell[];
-    visited: Cell[];
+    shortestPath: Node[];
+    visited: Node[];
 }
 
-export function dijkstra(grid: OuterCell[][], onVisitCell?: (cell: Cell) => void): Result {
-    const gridClone: Cell[][] = grid.map(row => [...row.map(cell => ({
+export function dijkstra(grid: Cell[][]): Result {
+    const gridClone: Node[][] = grid.map(row => [...row.map(cell => ({
         ...cell,
         distance: Infinity,
         prevCell: undefined,
     }))]);
 
-    const visitedCells = [];
-    const unvisitedCells = gridClone.reduce((flat, currentRow) => [...flat, ...currentRow], []);
-    const start = findFirstCellOfType(CellTypes.START, unvisitedCells);
+    const visited = [];
+    const unvisited = gridClone.reduce((flat, currentRow) => [...flat, ...currentRow], []);
+    const start = findFirstNodeOfType(CellTypes.START, unvisited);
 
     if (!start) {
         throw new Error('Start point is missing');
@@ -91,24 +79,23 @@ export function dijkstra(grid: OuterCell[][], onVisitCell?: (cell: Cell) => void
 
     start.distance = 0;
 
-    while(unvisitedCells.length > unvisitedCells.length - 1) {
-        const sortedCells = sortByDistance(unvisitedCells);
-        const closestCell = sortedCells.shift() as Cell; // Undefined cant happen because while cond.
+    while(unvisited.length > unvisited.length - 1) {
+        const sortedNodes = sortByDistance(unvisited);
+        const current = sortedNodes.shift() as Node; // Undefined cant happen because while cond.
 
-        if (closestCell?.type === CellTypes.OBSTACLE) continue;
+        if (current?.type === CellTypes.OBSTACLE) continue;
 
-        closestCell.isVisited = true;
-        if (onVisitCell) onVisitCell(closestCell);
+        current.isVisited = true;
 
-        visitedCells.push(closestCell);
-        if (closestCell.type === CellTypes.END) break;
-        updateNeighbors(gridClone, closestCell);
+        visited.push(current);
+        if (current.type === CellTypes.END) break;
+        updateNeighbors(gridClone, current);
     }
 
     return {
-        visited: visitedCells,
-        shortestPath: visitedCells?.length > 0
-            ? getShortestPathFromVisitedCells(visitedCells[visitedCells.length - 1])
+        visited: visited,
+        shortestPath: visited?.length > 0
+            ? getShortestPathFromVisitedNodes(visited[visited.length - 1])
             : [],
     };
 }

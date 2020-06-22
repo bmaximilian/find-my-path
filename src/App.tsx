@@ -1,63 +1,64 @@
-import React, { memo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { connect, DispatchProp } from 'react-redux';
 import './App.css';
-import { Node } from './Node';
-import { Cell, State, initialState } from './store/state/initialState';
-import { setCellAsObstacle } from './store/actions/mapActions';
-import { Executor } from './Executor';
+import { State, initialState } from './store/state/initialState';
+import { replaceGrid, setCellAsObstacle, setGridDirty } from './store/actions/mapActions';
+import { Cell } from './models/Cell';
+import { Algorithm } from './models/Algorithm';
+import { setSelectedAlgorithm } from './store/actions/configActions';
+import { Grid } from './components/Grid';
+import { HeaderBar } from './components/HeaderBar';
+import { generateGrid } from './util/generateGrid';
+import { declareClassForCell, setClassForCell } from './components/Executor';
 
 interface AppProps extends DispatchProp {
-    grid: Cell[][];
+    algorithms: Algorithm[];
+    selectedAlgorithmIndex: number;
+    isAnimating: boolean;
 }
 
-let isMouseDown = false;
-function setMouseDown(newValue: boolean) {
-    isMouseDown = newValue;
-}
+function App({ dispatch, algorithms, selectedAlgorithmIndex, isAnimating }: AppProps) {
+    const handleSelectAlgorithm = (algorithm: Algorithm) => {
+        dispatch(setSelectedAlgorithm(algorithm));
+    }
 
-function App({ dispatch, grid }: AppProps) {
-    const handleMouseEnter = (cell: Cell) => {
-        if (!isMouseDown || cell.type !== 'free') return;
-
+    const handleSetCellAsObstacle = (cell: Cell) => {
         dispatch(setCellAsObstacle(cell));
-    };
+    }
+
+    const handleGenerateGrid = useCallback(() => {
+        const grid = generateGrid();
+        dispatch(replaceGrid(grid));
+
+        grid.forEach(row => row.forEach((cell) => {
+            setClassForCell(cell, declareClassForCell(cell));
+        }));
+
+        dispatch(setGridDirty(false));
+    }, [dispatch]);
+
+    useEffect(() => {
+        handleGenerateGrid();
+    }, [handleGenerateGrid]);
 
     return (
         <div className="App">
-            <table className="map">
-                <tbody>
-                    {grid.map((row, rowId) => (
-                        <tr key={rowId}>
-                            {row.map((cell) => <Node
-                                key={`${cell.row}-${cell.col}`}
-                                row={cell.row}
-                                col={cell.col}
-                                onMouseDown={() => setMouseDown(true)}
-                                onMouseUp={() => setMouseDown(false)}
-                                onMouseLeave={() => {}}
-                                onMouseEnter={() => {}}
-                                onMouseMove={handleMouseEnter}
-                            />)}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <Executor/>
+            <HeaderBar
+                algorithms={algorithms}
+                selectedAlgorithmIndex={selectedAlgorithmIndex}
+                onSelectAlgorithm={handleSelectAlgorithm}
+                onClearGrid={handleGenerateGrid}
+                isAnimating={isAnimating}
+            />
+            <Grid onSetCellAsObstacle={handleSetCellAsObstacle} />
         </div>
     );
 }
 
 const mapStateToProps = (state: State) => ({
-    grid: state?.map?.grid || initialState.map.grid,
+    algorithms: state?.config?.algorithms || initialState.config.algorithms,
+    selectedAlgorithmIndex: state?.config?.selectedAlgorithmIndex || initialState.config.selectedAlgorithmIndex,
+    isAnimating: state?.map?.isAnimating,
 });
 
-export default connect(mapStateToProps)(memo(
-    App,
-    (prevProps, nextProps) => {
-        if ((!prevProps.grid || prevProps.grid.length === 0) && nextProps?.grid.length > 0) {
-            return false;
-        }
-
-        return true;
-    },
-));
+export default connect(mapStateToProps)(App);

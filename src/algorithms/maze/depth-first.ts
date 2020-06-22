@@ -1,4 +1,4 @@
-import { CellTypes, OuterCell as Cell } from '../dijkstra';
+import { Cell, CellTypes } from '../../models/Cell';
 
 function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);

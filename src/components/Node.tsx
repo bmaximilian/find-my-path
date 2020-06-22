@@ -1,6 +1,8 @@
 import React, { MouseEvent } from 'react';
-import { Cell, State } from './store/state/initialState';
+import { Cell } from '../models/Cell';
+import { State } from '../store/state/initialState';
 import { connect } from 'react-redux';
+import { declareClassForCell } from './Executor';
 
 interface NodeProps {
     cell: Cell;
@@ -13,9 +15,7 @@ interface NodeProps {
 
 function RawNode(props: NodeProps): JSX.Element {
     const classes = ['map__cell'];
-    if (['obstacle', 'start', 'end'].includes(props.cell.type)) classes.push(`cell--${props.cell.type}`);
-    if (props.cell.isVisited) classes.push('cell--visited');
-    if (props.cell.isShortestPath) classes.push('cell--shortest-path');
+    classes.push(declareClassForCell(props.cell));
 
     return <td
         id={`${props.cell.row}-${props.cell.col}`}
