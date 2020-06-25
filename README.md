@@ -1,4 +1,4 @@
-## 🧭 Find my Path
+## 🧭  Find my Path
 ![Build and Pages Deploy](https://github.com/bmaximilian/find-my-path/workflows/Build%20and%20Pages%20Deploy/badge.svg)
 
 A visualization of pathfinding algorithms using TypeScript.<br/>
@@ -6,12 +6,12 @@ I've built this application to learn more about pathfinding algorithms in a prac
 You can access the application at [https://bmaximilian.github.io/find-my-path/](https://bmaximilian.github.io/find-my-path/). <br/>
 I'd suggest to use *Google Chrome* or *Firefox*.
 
-### 🎓 Supported algorithms
+### 🎓  Supported algorithms
 * [Dijkstra](https://github.com/bmaximilian/find-my-path/blob/master/src/algorithms/dijkstra.ts)
 * [Maze generation with randomized depth first search](https://github.com/bmaximilian/find-my-path/blob/master/src/algorithms/maze/depth-first.ts)
 
 
-### 🚢 Deployment
+### 🚢  Deployment
 The application runs at GitHub Pages because a backend isn't required. <br/>
 A CI pipeline, that runs with GitHub Actions builds the React application and pushes the build to a [separate branch (gh-pages)](https://github.com/bmaximilian/find-my-path/tree/gh-pages).
 
@@ -19,7 +19,7 @@ This workflow does not require any manual actions and lets the developers focus 
 But a downside of this workflow is that a separate commit with build assets is pushed to a branch that has nothing in common with the default branch and will never be merged,
 which pollutes the git history a bit. But it is required because GitHub Pages is serving the content out of this branch and we don't want to include build assets in our default branch which would pollute the repository even more.
 
-### 🚧 Caveats
+### 🚧  Caveats
 There were some performance issues by updating the CSS classes the [React](https://reactjs.org/) way. I needed to set the CSS classes of the table cells
 using [`document.getElementById`](https://github.com/bmaximilian/find-my-path/blob/08b5690820fc35bc753888bf3143b0193560e0da/src/components/Executor.tsx#L19-L32)
 instead of deciding based on state and props which class to set in the node.
