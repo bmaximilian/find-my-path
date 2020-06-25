@@ -45,6 +45,11 @@ const ALGORITHMS: {[id: string]: (grid: Cell[][]) => Result} = {
 
 function RawExecutor({ grid, selectedAlgorithm, dispatch, isGridDirty }: RawExecutorProps) {
     const animateShortestPath = (result: Result): void => {
+        if (result.shortestPath.length === 0) {
+            dispatch(setGridAnimating(false));
+            return;
+        }
+
         for (let i = 0; i < result.shortestPath.length; i += 1) {
             setTimeout(() => {
                 if ([CellTypes.START, CellTypes.END].includes(result.shortestPath[i].type)) return;

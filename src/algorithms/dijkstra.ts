@@ -85,6 +85,9 @@ export function dijkstra(grid: Cell[][]): Result {
 
         if (current?.type === CellTypes.OBSTACLE) continue;
 
+        // If the distance is infinity, the start point is trapped by obstacles
+        if (current.distance === Infinity) return { visited, shortestPath: [] };
+
         current.isVisited = true;
 
         visited.push(current);
@@ -93,7 +96,7 @@ export function dijkstra(grid: Cell[][]): Result {
     }
 
     return {
-        visited: visited,
+        visited,
         shortestPath: visited?.length > 0
             ? getShortestPathFromVisitedNodes(visited[visited.length - 1])
             : [],
