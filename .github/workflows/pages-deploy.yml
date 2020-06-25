@@ -40,7 +40,7 @@
             NODE_ENV: development
         - name: Build
           run: npm run build
-        - run: mkdir vendor-zip
+        - run: mkdir release-zip
         - name: Zip
           uses: montudor/action-zip@v0.1.0
           with:
