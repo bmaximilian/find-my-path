@@ -40,11 +40,10 @@
             NODE_ENV: development
         - name: Build
           run: npm run build
-        - run: mkdir release-zip
         - name: Zip
-          uses: montudor/action-zip@v0.1.0
-          with:
-            args: zip -qq -r ./release-zip/release.zip ./build
+          run: |
+            mkdir release-zip
+            tar -czvf ./release-zip/release.tar.gz ./build/*
         - name: Upload
           uses: actions/upload-artifact@master
           with:
@@ -60,11 +59,8 @@
             name: release
             path: release-zip
         - name: Unzip
-          uses: montudor/action-zip@v0.1.0
-          with:
-            args: unzip -qq ./release-zip/release.zip -d .
-        - name: Cleanup
           run: |
+            tar -xzvf ./release-zip/release.tar.gz
             cp -rf build/* .
             rm -rf release-zip build
         - name: Deploy
