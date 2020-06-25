@@ -44,7 +44,7 @@
         - name: Zip
           uses: montudor/action-zip@v0.1.0
           with:
-            args: zip -qq -r ./release-zip/release.zip ./build
+            args: zip -qq -r ./release-zip/release.zip ./build/*
         - name: Upload
           uses: actions/upload-artifact@master
           with:
@@ -63,12 +63,14 @@
           uses: montudor/action-zip@v0.1.0
           with:
             args: unzip -qq ./release-zip/release.zip -d .
-        - run: rm -rf release-zip
+        - name: Cleanup
+          run: |
+            cp -rf build/* .
+            rm -rf release-zip build
         - name: Deploy
           uses: peaceiris/actions-gh-pages@v3
           with:
             github_token: ${{ secrets.GITHUB_TOKEN }}
             publish_dir: ./
-            keep_files: true
             user_name: 'github-actions[bot]'
             user_email: 'github-actions[bot]@users.noreply.github.com'
