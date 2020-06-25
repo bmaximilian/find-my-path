@@ -44,7 +44,7 @@
         - name: Zip
           uses: montudor/action-zip@v0.1.0
           with:
-            args: zip -qq -r ./release-zip/release.zip ./build/*
+            args: zip -qq -r ./release-zip/release.zip ./build
         - name: Upload
           uses: actions/upload-artifact@master
           with:
