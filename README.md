@@ -1,44 +1,35 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🧭 Find my Path
+![Build and Pages Deploy](https://github.com/bmaximilian/find-my-path/workflows/Build%20and%20Pages%20Deploy/badge.svg)
 
-## Available Scripts
+A visualization of pathfinding algorithms using TypeScript.<br/>
+I've built this application to learn more about pathfinding algorithms in a practical manner. The visualization in the browser is a nice way to figure out how these algorithms work.
+You can access the application at [https://bmaximilian.github.io/find-my-path/](https://bmaximilian.github.io/find-my-path/). <br/>
+I'd suggest to use *Google Chrome* or *Firefox*.
 
-In the project directory, you can run:
+### 🎓 Supported algorithms
+* [Dijkstra](https://github.com/bmaximilian/find-my-path/blob/master/src/algorithms/dijkstra.ts)
+* [Maze generation with randomized depth first search](https://github.com/bmaximilian/find-my-path/blob/master/src/algorithms/maze/depth-first.ts)
 
-### `npm start`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 🚢 Deployment
+The application runs at GitHub Pages because a backend isn't required. <br/>
+A CI pipeline, that runs with GitHub Actions builds the React application and pushes the build to a [separate branch (gh-pages)](https://github.com/bmaximilian/find-my-path/tree/gh-pages).
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+This workflow does not require any manual actions and lets the developers focus completely on the source code after it is set up once. <br/>
+But a downside of this workflow is that a separate commit with build assets is pushed to a branch that has nothing in common with the default branch and will never be merged,
+which pollutes the git history a bit. But it is required because GitHub Pages is serving the content out of this branch and we don't want to include build assets in our default branch which would pollute the repository even more.
 
-### `npm test`
+### 🚧 Caveats
+There were some performance issues by updating the CSS classes the [React](https://reactjs.org/) way. I needed to set the CSS classes of the table cells
+using [`document.getElementById`](https://github.com/bmaximilian/find-my-path/blob/08b5690820fc35bc753888bf3143b0193560e0da/src/components/Executor.tsx#L19-L32)
+instead of deciding based on state and props which class to set in the node.
+State manipulation during the search animation is performance heavy because the cells need to be updated one by one.<br/>
+Replacing the grid after the algorithm is not so performance heavy and is done when generating the maze. With that mechanism, a performant step-by-step animation of the algorithm is not possible.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+In this app is [redux](https://redux.js.org/) used to manage the application state - the state of the table. Using redux is not really necessary for this application.
+I chose to use redux to easily get a single source of truth state management 
+and be able to detach the grid from the state and props of the components that might not need this state.
+This should optimize rendering performance by [avoiding re-rendering the whole table when a single node changes](https://github.com/bmaximilian/find-my-path/blob/08b5690820fc35bc753888bf3143b0193560e0da/src/components/Grid.tsx#L48-L57).
+The nodes can [receive their needed rendering props](https://github.com/bmaximilian/find-my-path/blob/08b5690820fc35bc753888bf3143b0193560e0da/src/components/Node.tsx#L32-L36) directly from redux.
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+[Material-UI](https://material-ui.com/) is used as UI component framework to outsource most of the styling work.

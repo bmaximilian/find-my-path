@@ -28,7 +28,7 @@ export function HeaderBar({ algorithms, selectedAlgorithmIndex, onSelectAlgorith
         <AppBar position="static">
             <Toolbar>
                 <Typography variant="h6" className={classes.title}>
-                    Search Visualizer
+                    Find my Path
                 </Typography>
                 <MazeExecutor />
                 <AlgorithmSelect
